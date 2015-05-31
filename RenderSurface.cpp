@@ -238,22 +238,25 @@ void RenderSurface::setAnimating(bool animating)
         renderLater();
 }
 
-std::string RenderSurface::setShaderCode(const std::string& code) {
+bool RenderSurface::setShaderCode(const std::string& code) {
   m_program = new QOpenGLShaderProgram(this);
   bool ret = m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
   if (!ret) {
-    return m_program->log().toStdString();
+    m_programError = m_program->log().toStdString();
+    return false;
   }
   ret = m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, code.c_str());
   if (!ret) {
-    return m_program->log().toStdString();
+    m_programError = m_program->log().toStdString();
+    return false;
   }
   ret = m_program->link();
   if (!ret) {
-    return m_program->log().toStdString();
+    m_programError = m_program->log().toStdString();
+    return false;
   }
   m_posAttr = m_program->attributeLocation("pos");
-  return std::string();
+  return true;
 }
 
 GLuint RenderSurface::loadShader(GLenum type, const char *source)

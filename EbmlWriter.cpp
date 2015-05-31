@@ -272,8 +272,8 @@ int Ebml_WriteWebMSeekInfo(EbmlGlobal *ebml)
         if (RT_SUCCESS(rc))
             rc = Ebml_SerializeFloat(ebml, Segment_Duration,
                                      (double)(ebml->last_pts_ms + frame_time));
-        char szVersion[64];
-        snprintf(szVersion, sizeof(szVersion), "vpxenc%s",
+        char szVersion[128];
+        sprintf(szVersion, "vpxenc%s",
                     ebml->debug ? "" : vpx_codec_version_str());
         if (RT_SUCCESS(rc))
             rc = Ebml_SerializeString(ebml, MuxingApp, szVersion);

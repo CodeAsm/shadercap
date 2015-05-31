@@ -68,16 +68,20 @@ public:
 
     QImage getImage() { return imageFrame; }
 
-    std::string setShaderCode(const std::string& code);
+    bool setShaderCode(const std::string& code);
+
+    std::string getShaderError() const {
+      return m_programError;
+    }
 
 public slots:
     void renderLater();
     void renderNow(const float time);
 
 private:
-    bool event(QEvent *event) Q_DECL_OVERRIDE;
+    bool event(QEvent *event);
 
-    void exposeEvent(QExposeEvent *event) Q_DECL_OVERRIDE;
+    void exposeEvent(QExposeEvent *event);
 
     GLuint loadShader(GLenum type, const char *source);
 
@@ -92,6 +96,7 @@ private:
     GLuint m_timeAttr;
 
     QOpenGLShaderProgram *m_program;
+    std::string m_programError;
     int m_frame;
 
     std::string shaderCode;

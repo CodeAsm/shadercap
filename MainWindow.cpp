@@ -134,16 +134,20 @@ void MainWindow::onConfigurePress() {
   renderSurface->renderNow(0.0f);
   QString program = code->document()->toPlainText();
   shaderProgram = program.toStdString();
-  std::string output = renderSurface->setShaderCode(shaderProgram);
+  bool shaderRet = renderSurface->setShaderCode(shaderProgram);
+  std::string shaderError = renderSurface->getShaderError();
   delete renderSurface;
   renderSurface = 0;
-  if (output.empty()) {
+  if (shaderRet) {
     preview->hide();
     codeWidget->hide();
     setCentralWidget(configWidget);
     configWidget->show();
   } else {
-    preview->setText(output.c_str());
+    if (shaderError.empty()) {
+      shaderError = "The shader could not be compiled.";
+    }
+    preview->setText(shaderError.c_str());
     preview->show();
   }
 }
@@ -181,17 +185,20 @@ void MainWindow::onNextFrame() {
   vpx_image_t* vpxImage = vpx_img_alloc(NULL, VPX_IMG_FMT_RGB24, renderSurface->width(), renderSurface->height(), 1);
   if (!vpxImage) {
     // error
+    __debugbreak();
   }
 
   size_t size = renderSurface->width() * renderSurface->height() * 3;
   if (size != size_t(image.byteCount())) {
     // error
+    __debugbreak();
   }
 
   memcpy(vpxImage->img_data, image.bits(), size);
 
   if (!encoder->writeFrame(vpxImage)) {
     // error
+    __debugbreak();
   }
 
   if (vpxImage) {
