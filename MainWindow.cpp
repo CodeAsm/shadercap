@@ -10,7 +10,7 @@ MainWindow::~MainWindow() {
   delete renderSurface;
 }
 
-MainWindow::MainWindow() {
+MainWindow::MainWindow() : renderSurface(0) {
   setWindowTitle("ShaderCap 1.0 by dila");
 
   codeWidget = new QWidget(this);
