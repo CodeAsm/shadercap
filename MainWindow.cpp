@@ -23,12 +23,13 @@ MainWindow::MainWindow() {
   layout->addWidget(code);
 
   preview = new QLabel(this);
+  preview->setStyleSheet("QLabel { color : red; }");
   preview->hide();
   layout->addWidget(preview);
 
   QHBoxLayout* hlayout = new QHBoxLayout(this);
   layout->addLayout(hlayout);
-  QPushButton* next = new QPushButton("Next", this);
+  QPushButton* next = new QPushButton("Compile", this);
   connect(next, SIGNAL(pressed()), this, SLOT(onConfigurePress()));
   hlayout->addStretch();
   hlayout->addWidget(next);
@@ -145,7 +146,7 @@ void MainWindow::onConfigurePress() {
     configWidget->show();
   } else {
     if (shaderError.empty()) {
-      shaderError = "The shader could not be compiled.";
+      shaderError = "Error: The shader could not be compiled.";
     }
     preview->setText(shaderError.c_str());
     preview->show();
@@ -184,21 +185,23 @@ void MainWindow::onNextFrame() {
 
   vpx_image_t* vpxImage = vpx_img_alloc(NULL, VPX_IMG_FMT_RGB24, renderSurface->width(), renderSurface->height(), 1);
   if (!vpxImage) {
-    // error
-    __debugbreak();
+    finishCapture("An error occured during capture: Out of memory.");
+    return;
   }
 
   size_t size = renderSurface->width() * renderSurface->height() * 3;
   if (size != size_t(image.byteCount())) {
-    // error
-    __debugbreak();
+    finishCapture("An error occured during capture: Image size error.");
+    vpx_img_free(vpxImage);
+    return;
   }
 
   memcpy(vpxImage->img_data, image.bits(), size);
 
   if (!encoder->writeFrame(vpxImage)) {
-    // error
-    __debugbreak();
+    finishCapture("An error occured during capture: Frame write error.");
+    vpx_img_free(vpxImage);
+    return;
   }
 
   if (vpxImage) {
@@ -218,11 +221,10 @@ void MainWindow::onNextFrame() {
     encoder->finish();
     delete encoder;
     if (complete) {
-      frame->setText("The capture is complete.");
+      finishCapture("The capture is complete.");
     } else {
-      frame->setText("The capture was stopped before it finished.");
+      finishCapture("The capture was stopped before it finished.");
     }
-    button->setEnabled(false);
   }
 
   if (!finalFrame) {
@@ -232,4 +234,9 @@ void MainWindow::onNextFrame() {
 
 void MainWindow::onFinalPress() {
   finalFrame = true;
+}
+
+void MainWindow::finishCapture(const std::string& status) {
+  frame->setText(status.c_str());
+  button->setEnabled(false);
 }

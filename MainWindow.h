@@ -26,6 +26,8 @@ public slots:
   void onNextFrame();
   void onFinalPress();
 public:
+  void finishCapture(const std::string& status);
+
   QWidget* codeWidget;
   CodeEditor* code;
   QLabel* preview;
