@@ -34,10 +34,16 @@ MainWindow::MainWindow() {
   hlayout->addStretch();
   hlayout->addWidget(next);
 
+  bindingsWidget = new QWidget(this);
+  QVBoxLayout* bindingsLayout = new QVBoxLayout(bindingsWidget);
+  bindingsWidget->hide();
+  shaderBindings = new ShaderBindings(shaderProgram, this);
+  bindingsLayout->addWidget(shaderBindings);
+  connect(shaderBindings, SIGNAL(onNextPress()), this, SLOT(onBindingsPress()));
+
   configWidget = new QWidget(this);
   QVBoxLayout* configLayout = new QVBoxLayout(configWidget);
   configWidget->hide();
-
   videoOptions = new VideoOptions(this);
   configLayout->addWidget(videoOptions);
   connect(videoOptions, SIGNAL(onExportPress()), this, SLOT(onRenderPress()));
@@ -67,10 +73,9 @@ void MainWindow::onConfigurePress() {
   delete renderSurface;
   renderSurface = 0;
   if (shaderRet) {
-    preview->hide();
     codeWidget->hide();
-    setCentralWidget(configWidget);
-    configWidget->show();
+    bindingsWidget->show();
+    setCentralWidget(bindingsWidget);
   } else {
     if (shaderError.empty()) {
       shaderError = "Error: The shader could not be compiled.";
@@ -78,6 +83,12 @@ void MainWindow::onConfigurePress() {
     preview->setText(shaderError.c_str());
     preview->show();
   }
+}
+
+void MainWindow::onBindingsPress() {
+  bindingsWidget->hide();
+  setCentralWidget(configWidget);
+  configWidget->show();
 }
 
 void MainWindow::onRenderPress() {

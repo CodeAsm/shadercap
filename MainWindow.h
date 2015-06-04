@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QProgressBar>
 #include <QLineEdit>
+#include "ShaderBindings.h"
 #include "VideoOptions.h"
 #include "RenderSurface.h"
 
@@ -21,11 +22,15 @@ public:
   MainWindow();
 public slots:
   void onConfigurePress();
+  void onBindingsPress();
   void onRenderPress();
 private:
   QWidget* codeWidget;
   CodeEditor* code;
   QLabel* preview;
+
+  QWidget* bindingsWidget; /* ShaderBindings */
+  ShaderBindings* shaderBindings;
 
   QWidget* configWidget; /* VideoOptions */
   VideoOptions* videoOptions;
