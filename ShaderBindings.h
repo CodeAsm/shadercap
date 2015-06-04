@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include "ShaderParameter.h"
 
 class ShaderBindings : public QWidget {
   Q_OBJECT

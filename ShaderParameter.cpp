@@ -75,7 +75,8 @@ std::vector<ShaderParameter> parseShaderParameters(const std::string& shaderCode
   const char* test[] = {shaderCode.c_str()};
   shader.setStrings(test, 1);
 
-  TBuiltInResource resources = {0};
+  TBuiltInResource resources;
+  memset(&resources, 0, sizeof(resources));
   shader.parse(&resources, 100, true, EShMsgDefault);
   //printf("%s\n", shader.getInfoLog());
 

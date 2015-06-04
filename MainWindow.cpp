@@ -11,7 +11,7 @@ MainWindow::~MainWindow() {
 }
 
 MainWindow::MainWindow() {
-  setWindowTitle("ShaderCap 1.0 by dila");
+  setWindowTitle("ShaderCap 1.1 by dila");
 
   codeWidget = new QWidget(this);
   setCentralWidget(codeWidget);
@@ -29,17 +29,13 @@ MainWindow::MainWindow() {
 
   QHBoxLayout* hlayout = new QHBoxLayout(this);
   layout->addLayout(hlayout);
-  QPushButton* next = new QPushButton("Compile", this);
+  QPushButton* next = new QPushButton("Next", this);
   connect(next, SIGNAL(pressed()), this, SLOT(onConfigurePress()));
   hlayout->addStretch();
   hlayout->addWidget(next);
 
   bindingsWidget = new QWidget(this);
-  QVBoxLayout* bindingsLayout = new QVBoxLayout(bindingsWidget);
   bindingsWidget->hide();
-  shaderBindings = new ShaderBindings(shaderProgram, this);
-  bindingsLayout->addWidget(shaderBindings);
-  connect(shaderBindings, SIGNAL(onNextPress()), this, SLOT(onBindingsPress()));
 
   configWidget = new QWidget(this);
   QVBoxLayout* configLayout = new QVBoxLayout(configWidget);
@@ -49,18 +45,6 @@ MainWindow::MainWindow() {
   connect(videoOptions, SIGNAL(onExportPress()), this, SLOT(onRenderPress()));
 
   show();
-}
-
-std::string getShaderParameters(const std::string& code) {
-  std::vector<ShaderParameter> params = parseShaderParameters(code);
-  std::string ret;
-  for (size_t i = 0; i < params.size(); ++i) {
-    ret += params[i].uniform?"uniform":"varying";
-    ret += " " + params[i].type;
-    ret += " " + params[i].name;
-    ret += (i!=(params.size()-1)?"\n":"");
-  }
-  return ret;
 }
 
 void MainWindow::onConfigurePress() {
@@ -74,8 +58,15 @@ void MainWindow::onConfigurePress() {
   renderSurface = 0;
   if (shaderRet) {
     codeWidget->hide();
+
+    QVBoxLayout* bindingsLayout = new QVBoxLayout(bindingsWidget);
+    shaderBindings = new ShaderBindings(shaderProgram, this);
+    connect(shaderBindings, SIGNAL(onNextPress()), this, SLOT(onBindingsPress()));
+    bindingsLayout->addWidget(shaderBindings);
+
     bindingsWidget->show();
     setCentralWidget(bindingsWidget);
+    adjustSize();
   } else {
     if (shaderError.empty()) {
       shaderError = "Error: The shader could not be compiled.";
@@ -89,6 +80,7 @@ void MainWindow::onBindingsPress() {
   bindingsWidget->hide();
   setCentralWidget(configWidget);
   configWidget->show();
+  adjustSize();
 }
 
 void MainWindow::onRenderPress() {
@@ -100,4 +92,6 @@ void MainWindow::onRenderPress() {
   renderLayout->addWidget(new VideoProgress(videoOptions->getVideoParameters(shaderProgram), renderWidget));
 
   setCentralWidget(renderWidget);
+
+  adjustSize();
 }
