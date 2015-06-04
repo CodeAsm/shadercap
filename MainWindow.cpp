@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QFileDialog>
 #include "CodeEditor.h"
+#include "ShaderParameter.h"
 
 MainWindow::~MainWindow() {
   delete renderSurface;
@@ -85,7 +86,7 @@ MainWindow::MainWindow() : renderSurface(0) {
   QLabel* brLabel = new QLabel("Bitrate:", this);
   brLayout->addWidget(brLabel);
   bitrate = new QSpinBox(this);
-  bitrate->setMaximum(10 * 1024);
+  bitrate->setMaximum(100 * 1024);
   bitrate->setValue(500);
   brLayout->addWidget(bitrate);
   brLayout->addWidget(new QLabel("kbps"));
@@ -130,6 +131,18 @@ MainWindow::MainWindow() : renderSurface(0) {
   show();
 }
 
+std::string getShaderParameters(const std::string& code) {
+  std::vector<ShaderParameter> params = parseShaderParameters(code);
+  std::string ret;
+  for (size_t i = 0; i < params.size(); ++i) {
+    ret += params[i].uniform?"uniform":"varying";
+    ret += " " + params[i].type;
+    ret += " " + params[i].name;
+    ret += (i!=(params.size()-1)?"\n":"");
+  }
+  return ret;
+}
+
 void MainWindow::onConfigurePress() {
   renderSurface = new RenderSurface(128, 128);
   renderSurface->renderNow(0.0f);
@@ -139,6 +152,10 @@ void MainWindow::onConfigurePress() {
   std::string shaderError = renderSurface->getShaderError();
   delete renderSurface;
   renderSurface = 0;
+
+  shaderRet = false;
+  shaderError = getShaderParameters(shaderProgram);
+
   if (shaderRet) {
     preview->hide();
     codeWidget->hide();

@@ -24,17 +24,28 @@ SOURCES += Shadercap.cpp \
            CodeEditor.cpp \
            VideoEncoder.cpp \
            EbmlWriter.cpp \
-           EbmlSupport.cpp
+           EbmlSupport.cpp \
+           ShaderParameter.cpp
 
 INCLUDEPATH += $$PWD
+INCLUDEPATH += "./glslang/glslang/MachineIndependent/"
+INCLUDEPATH += "./glslang/glslang/"
+INCLUDEPATH += "./glslang/OGLCompilersDLL/"
+unix: INCLUDEPATH += "./glslang/glslang/OSDependent/Linux/"
+win32: INCLUDEPATH += "./glslang/glslang/OSDependent/Windows/"
 
 unix: LIBS += -lvpx
+unix: LIBS += -L"./glslang/glslang/" -lglslang
+unix: LIBS += -L"./glslang/glslang/OSDependent/Linux/" -lOSDependent 
+unix: LIBS += -L"./glslang/OGLCompilersDLL/" -lOGLCompiler
+
+# Windows libs must be configured manually in Visual Studio
 win32: LIBS += -lvpx
 
 QT += core gui widgets
 
 gcc {
-  QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
+  QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unused-variable
   QMAKE_CXXFLAGS_RELEASE -= -O
   QMAKE_CXXFLAGS_RELEASE -= -O1
   QMAKE_CXXFLAGS_RELEASE -= -O2
