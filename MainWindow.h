@@ -7,8 +7,8 @@
 #include <QPushButton>
 #include <QProgressBar>
 #include <QLineEdit>
+#include "VideoOptions.h"
 #include "RenderSurface.h"
-#include "VideoEncoder.h"
 
 class CanvasWidget;
 class CameraControlWidget;
@@ -21,36 +21,16 @@ public:
   MainWindow();
 public slots:
   void onConfigurePress();
-  void onBrowsePress();
   void onRenderPress();
-  void onNextFrame();
-  void onFinalPress();
-public:
-  void finishCapture(const std::string& status);
-
+private:
   QWidget* codeWidget;
   CodeEditor* code;
   QLabel* preview;
 
-  QWidget* configWidget;
-  QLineEdit* path;
-  QSpinBox* width;
-  QSpinBox* height;
-  QSpinBox* fps;
-  QSpinBox* bitrate;
-  QSpinBox* duration;
-
-  QWidget* renderWidget;
-  QLabel* frame;
-  QProgressBar* bar;
-  QPushButton* button;
+  QWidget* configWidget; /* VideoOptions */
+  VideoOptions* videoOptions;
 
   RenderSurface* renderSurface;
-  VideoEncoder* encoder;
-
-  bool finalFrame;
-  size_t frameCount;
-  size_t durationSeconds;
   std::string shaderProgram;
 };
 

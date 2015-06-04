@@ -38,6 +38,9 @@
 **
 ****************************************************************************/
 
+#ifndef __RENDER_SURFACE_H__
+#define __RENDER_SURFACE_H__
+
 #include <QOffscreenSurface>
 #include <QtGui/QOpenGLFunctions>
 #include <QExposeEvent>
@@ -106,3 +109,5 @@ private:
     int m_outHeight;
     float m_globalTime;
 };
+
+#endif // __RENDER_SURFACE_H__

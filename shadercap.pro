@@ -16,7 +16,10 @@ CONFIG(release, debug|release){
 
 HEADERS += MainWindow.h \
            RenderSurface.h \
-           CodeEditor.h
+           CodeEditor.h \
+           VideoOptions.h \
+           VideoProgress.h \
+           VideoParameters.h
 
 SOURCES += Shadercap.cpp \
            MainWindow.cpp \
@@ -25,7 +28,9 @@ SOURCES += Shadercap.cpp \
            VideoEncoder.cpp \
            EbmlWriter.cpp \
            EbmlSupport.cpp \
-           ShaderParameter.cpp
+           ShaderParameter.cpp \
+           VideoOptions.cpp \
+           VideoProgress.cpp
 
 INCLUDEPATH += $$PWD
 INCLUDEPATH += "./glslang/glslang/MachineIndependent/"
@@ -45,7 +50,7 @@ win32: LIBS += -lvpx
 QT += core gui widgets
 
 gcc {
-  QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unused-variable
+  QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unused-variable -Wunused-parameter
   QMAKE_CXXFLAGS_RELEASE -= -O
   QMAKE_CXXFLAGS_RELEASE -= -O1
   QMAKE_CXXFLAGS_RELEASE -= -O2
