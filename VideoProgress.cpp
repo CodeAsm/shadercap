@@ -39,6 +39,10 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters,  const Shad
   frameCount = 0;
   durationSeconds = vp.duration;
 
+  if (!sp.size()) {
+    onNextFrame();
+  }
+
   frame->setText("Loading resources...");
   resourceLoadIndex = 0;
   onLoadResource();

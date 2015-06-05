@@ -141,7 +141,9 @@ private:
       }
     private:
       static QOpenGLTexture* fromImage(const QImage& src) {
-        return new QOpenGLTexture(src.mirrored());
+        QOpenGLTexture* tex = new QOpenGLTexture(src);
+        tex->setMinMagFilters(QOpenGLTexture::LinearMipMapLinear, QOpenGLTexture::LinearMipMapLinear);
+        return tex;
       }
     public:
       QImage image;
