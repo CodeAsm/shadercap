@@ -23,6 +23,8 @@ public slots:
   void onFinalPress();
 public:
   void finishCapture(const std::string& status);
+signals:
+  void onComplete();
 private:
   QLabel* frame;
   QProgressBar* bar;
@@ -33,6 +35,7 @@ private:
   VideoEncoder* encoder;
 
   bool finalFrame;
+  bool captureDone;
   size_t frameCount;
   size_t durationSeconds;
 };

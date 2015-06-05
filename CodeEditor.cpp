@@ -53,6 +53,9 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+
+    setFont(QFont("Courier", 11));
+    setWordWrapMode(QTextOption::NoWrap);
 }
 
 

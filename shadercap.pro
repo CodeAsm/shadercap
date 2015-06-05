@@ -20,7 +20,8 @@ HEADERS += MainWindow.h \
            VideoOptions.h \
            VideoProgress.h \
            VideoParameters.h \
-           ShaderBindings.h
+           ShaderBindings.h \
+           PathWidget.h
 
 SOURCES += Shadercap.cpp \
            MainWindow.cpp \
@@ -32,7 +33,8 @@ SOURCES += Shadercap.cpp \
            ShaderParameter.cpp \
            VideoOptions.cpp \
            VideoProgress.cpp \
-           ShaderBindings.cpp
+           ShaderBindings.cpp \
+           PathWidget.cpp
 
 INCLUDEPATH += $$PWD
 INCLUDEPATH += "./glslang/glslang/MachineIndependent/"

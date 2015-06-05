@@ -20,21 +20,29 @@ class MainWindow : public QMainWindow {
 public:
   ~MainWindow();
   MainWindow();
+  void centerWindow(bool resize = true);
+private:
+  void layoutInitialView();
 public slots:
   void onConfigurePress();
-  void onBindingsPress();
+  void onLayoutBindingsView();
+  void onBindingsNextPress();
+  void onBindingsBackPress();
+  void onConfigureBackPress();
   void onRenderPress();
+  void onRenderComplete();
 private:
-  QWidget* codeWidget;
+  QVBoxLayout* codeLayout;
   CodeEditor* code;
   QLabel* preview;
 
-  QWidget* bindingsWidget; /* ShaderBindings */
+  QVBoxLayout* bindingsLayout;
   ShaderBindings* shaderBindings;
 
-  QWidget* configWidget; /* VideoOptions */
+  QVBoxLayout* configLayout;
   VideoOptions* videoOptions;
 
+  QVBoxLayout* renderLayout;
   RenderSurface* renderSurface;
   std::string shaderProgram;
 };

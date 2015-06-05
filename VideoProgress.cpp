@@ -11,22 +11,27 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters, QWidget* pa
   QWidget* central = this;//new QWidget(this);
   //setCentralWidget(central);
   QVBoxLayout* renderLayout = new QVBoxLayout(central);
+  renderLayout->addStretch();
 
   frame = new QLabel(this);
   frame->setAlignment(Qt::AlignCenter);
   renderLayout->addWidget(frame);
+  renderLayout->addStretch();
 
   bar = new QProgressBar(this);
   renderLayout->addWidget(bar);
 
+  //renderLayout->addStretch();
   QHBoxLayout* hlayout = new QHBoxLayout(this);
   renderLayout->addLayout(hlayout);
   button = new QPushButton("Cancel", this);
   connect(button, SIGNAL(pressed()), this, SLOT(onFinalPress()));
   hlayout->addStretch();
   hlayout->addWidget(button);
+  //hlayout->addStretch();
 
   finalFrame = false;
+  captureDone = false;
   renderSurface = new RenderSurface(vp.width, vp.height);
   renderSurface->setShaderCode(vp.code);
   encoder = new VideoEncoder(vp.path, vp.fps, vp.bitrate);
@@ -41,8 +46,10 @@ void VideoProgress::onNextFrame() {
   renderSurface->renderNow(frameCount/float(encoder->fpsValue()));
   QImage image = renderSurface->getImage();
 
-  QImage preview = image.scaled(320,200,Qt::KeepAspectRatio,Qt::FastTransformation);
-  frame->setPixmap(QPixmap::fromImage(preview));
+  //if (!frameCount || frameCount % 3 == 0) {
+    QImage preview = image.scaled(320,200,Qt::KeepAspectRatio,Qt::FastTransformation);
+    frame->setPixmap(QPixmap::fromImage(preview));
+  //}
 
   image = image.convertToFormat(QImage::Format_RGB888);
 
@@ -86,7 +93,7 @@ void VideoProgress::onNextFrame() {
     if (complete) {
       finishCapture("The capture is complete.");
     } else {
-      finishCapture("The capture was stopped before it finished.");
+      finishCapture("The capture was canceled.");
     }
   }
 
@@ -96,11 +103,15 @@ void VideoProgress::onNextFrame() {
 }
 
 void VideoProgress::onFinalPress() {
-  finalFrame = true;
+  if (captureDone) {
+    onComplete();
+  } else {
+    finalFrame = true;
+  }
 }
 
 void VideoProgress::finishCapture(const std::string& status) {
   frame->setText(status.c_str());
-  button->setEnabled(false);
+  button->setText("Finish");
+  captureDone = true;
 }
-

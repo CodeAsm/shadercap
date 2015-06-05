@@ -49,7 +49,7 @@ private:
   virtual void visitSymbol(TIntermSymbol* sym) {
     TQualifier qual = sym->getQualifier();
     TStorageQualifier squal = qual.storage;
-    if (squal == EvqVaryingIn || squal == EvqUniform) {
+    if (squal == EvqUniform) { /* || squal == EvqVaryingIn ) { */
       bool uniform = (squal == EvqUniform);
       std::string type = stringFromType(sym->getType());
       TString name = sym->getName();

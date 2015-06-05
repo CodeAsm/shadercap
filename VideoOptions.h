@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include "PathWidget.h"
 #include "VideoParameters.h"
 
 class VideoOptions : public QWidget {
@@ -16,17 +17,17 @@ public:
   ~VideoOptions();
   VideoOptions(QWidget* parent);
   VideoParameters getVideoParameters(const std::string& code) const;
-public slots:
-  void onBrowsePress();
 signals:
-  void onExportPress();
+  void onBackPress();
+  void onNextPress();
 private:
-  QLineEdit* path;
+  PathWidget* path;
   QSpinBox* width;
   QSpinBox* height;
   QSpinBox* fps;
   QSpinBox* bitrate;
   QSpinBox* duration;
+  QPushButton* prev;
   QPushButton* next;
 };
 

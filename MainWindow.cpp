@@ -3,6 +3,9 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QStyle>
+#include <QDesktopWidget>
+#include <QApplication>
 #include "CodeEditor.h"
 #include "ShaderParameter.h"
 #include "VideoProgress.h"
@@ -12,39 +15,45 @@ MainWindow::~MainWindow() {
 
 MainWindow::MainWindow() {
   setWindowTitle("ShaderCap 1.1 by dila");
+  resize(576, 360);
+  layoutInitialView();
+  centerWindow(false);
+  show();
+}
 
-  codeWidget = new QWidget(this);
-  setCentralWidget(codeWidget);
-  QVBoxLayout* layout = new QVBoxLayout(codeWidget);
+void MainWindow::centerWindow(bool resize) {
+  if (resize) {
+    adjustSize();
+  }
+  setGeometry(
+   QStyle::alignedRect(
+   Qt::LeftToRight,
+   Qt::AlignCenter,
+   size(),
+   qApp->desktop()->availableGeometry()
+   ));
+}
 
-  layout->addWidget(new QLabel("Input your shader program:"));
+void MainWindow::layoutInitialView() {
+  setCentralWidget(new QWidget(this));
+  codeLayout = new QVBoxLayout(centralWidget());
 
+  codeLayout->addWidget(new QLabel("Input your shader program:"));
   code = new CodeEditor(this);
-  layout->addWidget(code);
+  code->document()->setPlainText(shaderProgram.c_str());
+  codeLayout->addWidget(code);
 
   preview = new QLabel(this);
   preview->setStyleSheet("QLabel { color : red; }");
   preview->hide();
-  layout->addWidget(preview);
+  codeLayout->addWidget(preview);
 
   QHBoxLayout* hlayout = new QHBoxLayout(this);
-  layout->addLayout(hlayout);
+  codeLayout->addLayout(hlayout);
   QPushButton* next = new QPushButton("Next", this);
   connect(next, SIGNAL(pressed()), this, SLOT(onConfigurePress()));
   hlayout->addStretch();
   hlayout->addWidget(next);
-
-  bindingsWidget = new QWidget(this);
-  bindingsWidget->hide();
-
-  configWidget = new QWidget(this);
-  QVBoxLayout* configLayout = new QVBoxLayout(configWidget);
-  configWidget->hide();
-  videoOptions = new VideoOptions(this);
-  configLayout->addWidget(videoOptions);
-  connect(videoOptions, SIGNAL(onExportPress()), this, SLOT(onRenderPress()));
-
-  show();
 }
 
 void MainWindow::onConfigurePress() {
@@ -57,16 +66,7 @@ void MainWindow::onConfigurePress() {
   delete renderSurface;
   renderSurface = 0;
   if (shaderRet) {
-    codeWidget->hide();
-
-    QVBoxLayout* bindingsLayout = new QVBoxLayout(bindingsWidget);
-    shaderBindings = new ShaderBindings(shaderProgram, this);
-    connect(shaderBindings, SIGNAL(onNextPress()), this, SLOT(onBindingsPress()));
-    bindingsLayout->addWidget(shaderBindings);
-
-    bindingsWidget->show();
-    setCentralWidget(bindingsWidget);
-    adjustSize();
+    onLayoutBindingsView();
   } else {
     if (shaderError.empty()) {
       shaderError = "Error: The shader could not be compiled.";
@@ -76,22 +76,46 @@ void MainWindow::onConfigurePress() {
   }
 }
 
-void MainWindow::onBindingsPress() {
-  bindingsWidget->hide();
-  setCentralWidget(configWidget);
-  configWidget->show();
-  adjustSize();
+void MainWindow::onLayoutBindingsView() {
+  setCentralWidget(new QWidget(this));
+  bindingsLayout = new QVBoxLayout(centralWidget());
+  shaderBindings = new ShaderBindings(shaderProgram, this);
+  connect(shaderBindings, SIGNAL(onNextPress()), this, SLOT(onBindingsNextPress()));
+  connect(shaderBindings, SIGNAL(onBackPress()), this, SLOT(onBindingsBackPress()));
+  bindingsLayout->addWidget(shaderBindings);
+  //shaderBindings->setParent(this);
+}
+
+void MainWindow::onBindingsNextPress() {
+  shaderBindings->setParent(this);
+  setCentralWidget(new QWidget(this));
+  configLayout = new QVBoxLayout(centralWidget());
+  videoOptions = new VideoOptions(this);
+  configLayout->addWidget(videoOptions);
+  connect(videoOptions, SIGNAL(onNextPress()), this, SLOT(onRenderPress()));
+  connect(videoOptions, SIGNAL(onBackPress()), this, SLOT(onConfigureBackPress()));
+  //centerWindow();
+}
+
+void MainWindow::onBindingsBackPress() {
+  layoutInitialView();
+}
+
+void MainWindow::onConfigureBackPress() {
+  setCentralWidget(new QWidget(this));
+  bindingsLayout = new QVBoxLayout(centralWidget());
+  bindingsLayout->addWidget(shaderBindings);
 }
 
 void MainWindow::onRenderPress() {
-  configWidget->hide();
+  setCentralWidget(new QWidget(this));
+  renderLayout = new QVBoxLayout(centralWidget());
+  VideoProgress* vp = new VideoProgress(videoOptions->getVideoParameters(shaderProgram), this);
+  connect(vp, SIGNAL(onComplete()), this, SLOT(onRenderComplete()));
+  renderLayout->addWidget(vp);
+  //centerWindow();
+}
 
-  QWidget* renderWidget = new QWidget(this);
-  QVBoxLayout* renderLayout = new QVBoxLayout(renderWidget);
-
-  renderLayout->addWidget(new VideoProgress(videoOptions->getVideoParameters(shaderProgram), renderWidget));
-
-  setCentralWidget(renderWidget);
-
-  adjustSize();
+void MainWindow::onRenderComplete() {
+  close();
 }

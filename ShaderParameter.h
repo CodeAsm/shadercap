@@ -5,12 +5,24 @@
 #include <string>
 
 struct ShaderParameter {
-  bool operator <(const ShaderParameter& rhs) const {
-    return name < rhs.name;
-  }
+  enum Bind {
+    BindUnbound,
+    BindGlobalTime,
+    BindOutputResolution,
+    BindTextureSampler,
+    BindTextureResolution
+  };
+
+  Bind bind;
+  std::string texture;
+
   std::string type;
   std::string name;
   bool uniform; /* else varying */
+
+  bool operator <(const ShaderParameter& rhs) const {
+    return name < rhs.name;
+  }
 };
 
 std::vector<ShaderParameter> parseShaderParameters(const std::string& shaderCode);
