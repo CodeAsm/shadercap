@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include "VideoParameters.h"
+#include "ShaderParameter.h"
 #include "RenderSurface.h"
 #include "VideoEncoder.h"
 
@@ -17,8 +18,9 @@ class VideoProgress : public QWidget {
   Q_OBJECT
 public:
   ~VideoProgress();
-  VideoProgress(const VideoParameters& videoParameters, QWidget* parent);
+  VideoProgress(const VideoParameters& videoParameters, const ShaderParameters& shaderParameters, QWidget* parent);
 public slots:
+  void onLoadResource();
   void onNextFrame();
   void onFinalPress();
 public:
@@ -31,6 +33,7 @@ private:
   QPushButton* button;
 
   VideoParameters vp;
+  ShaderParameters sp;
   RenderSurface* renderSurface;
   VideoEncoder* encoder;
 
@@ -38,6 +41,8 @@ private:
   bool captureDone;
   size_t frameCount;
   size_t durationSeconds;
+
+  size_t resourceLoadIndex;
 };
 
 #endif // __VIDEO_PROGRESS_H__

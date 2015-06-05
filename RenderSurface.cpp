@@ -115,6 +115,16 @@ void RenderSurface::render(QPainter *painter)
     m_program->setUniformValue("iGlobalTime", m_globalTime);
     m_program->setUniformValue("iResolution", QVector2D(m_outWidth,m_outHeight));
 
+    /* bind textures */
+    int texCount = 0;
+    for (size_t i = 0; i < sp.size(); ++i) {
+      if (sp[i].bind == ShaderParameter::BindTextureSampler) {
+        textures[sp[i].name].obj->bind(texCount);
+        m_program->setUniformValue(sp[i].name.c_str(), texCount);
+        texCount++;
+      }
+    }
+
     GLfloat vertices[] = {
       -1.0f,  -1.0f, 0.0f,
       1.0f, -1.0f, 0.0f,

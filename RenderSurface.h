@@ -46,7 +46,10 @@
 #include <QExposeEvent>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
+#include <QOpenGLTexture>
 #include <QImage>
+#include <map>
+#include "ShaderParameter.h"
 
 class QPainter;
 class QOpenGLContext;
@@ -75,6 +78,14 @@ public:
 
     std::string getShaderError() const {
       return m_programError;
+    }
+
+    void setShaderParameters(const ShaderParameters& shaderParameters) {
+      sp = shaderParameters;
+    }
+
+    void addTexture(const std::string& name, const QImage& texture) {
+      textures[name] = texture;
     }
 
 public slots:
@@ -108,6 +119,37 @@ private:
     int m_outWidth;
     int m_outHeight;
     float m_globalTime;
+
+    class Texture {
+    public:
+      ~Texture() {
+        delete obj;
+      }
+      Texture() : obj(0) {
+      }
+      Texture(const QImage& image) : image(image) {
+        obj = fromImage(image);
+      }
+      Texture(const Texture& src) : obj(0) {
+        *this = src;
+      }
+      Texture& operator =(const Texture& src) {
+        delete obj;
+        image = src.image;
+        obj = fromImage(image);
+        return *this;
+      }
+    private:
+      static QOpenGLTexture* fromImage(const QImage& src) {
+        return new QOpenGLTexture(src.mirrored());
+      }
+    public:
+      QImage image;
+      QOpenGLTexture* obj;
+    };
+
+    ShaderParameters sp;
+    std::map<std::string, Texture> textures;
 };
 
 #endif // __RENDER_SURFACE_H__

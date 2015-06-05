@@ -110,9 +110,11 @@ void MainWindow::onConfigureBackPress() {
 void MainWindow::onRenderPress() {
   setCentralWidget(new QWidget(this));
   renderLayout = new QVBoxLayout(centralWidget());
-  VideoProgress* vp = new VideoProgress(videoOptions->getVideoParameters(shaderProgram), this);
-  connect(vp, SIGNAL(onComplete()), this, SLOT(onRenderComplete()));
-  renderLayout->addWidget(vp);
+  ShaderParameters sp = shaderBindings->getShaderParameters();
+  VideoParameters vp = videoOptions->getVideoParameters(shaderProgram);
+  VideoProgress* videoProgress = new VideoProgress(vp, sp, this);
+  connect(videoProgress, SIGNAL(onComplete()), this, SLOT(onRenderComplete()));
+  renderLayout->addWidget(videoProgress);
   //centerWindow();
 }
 

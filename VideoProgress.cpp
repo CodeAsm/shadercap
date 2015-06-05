@@ -5,7 +5,7 @@ VideoProgress::~VideoProgress() {
   delete renderSurface;
 }
 
-VideoProgress::VideoProgress(const VideoParameters& videoParameters, QWidget* parent) : QWidget(parent), vp(videoParameters), renderSurface(0) {
+VideoProgress::VideoProgress(const VideoParameters& videoParameters,  const ShaderParameters& shaderParameters, QWidget* parent) : QWidget(parent), vp(videoParameters), sp(shaderParameters), renderSurface(0) {
   setWindowTitle("Export");
 
   QWidget* central = this;//new QWidget(this);
@@ -34,10 +34,29 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters, QWidget* pa
   captureDone = false;
   renderSurface = new RenderSurface(vp.width, vp.height);
   renderSurface->setShaderCode(vp.code);
+  renderSurface->setShaderParameters(sp);
   encoder = new VideoEncoder(vp.path, vp.fps, vp.bitrate);
   frameCount = 0;
   durationSeconds = vp.duration;
-  onNextFrame();
+
+  frame->setText("Loading resources...");
+  resourceLoadIndex = 0;
+  onLoadResource();
+}
+
+void VideoProgress::onLoadResource() {
+  const size_t numRes = sp.size();
+  if (sp[resourceLoadIndex].bind == ShaderParameter::BindTextureSampler) {
+    QImage image = QImage(sp[resourceLoadIndex].texture.c_str());
+    renderSurface->addTexture(sp[resourceLoadIndex].name, image);
+  }
+  if (++resourceLoadIndex == numRes) {
+    bar->setValue(0);
+    onNextFrame();
+  } else {
+    bar->setValue(resourceLoadIndex/float(numRes)*100);
+    QTimer::singleShot(0, this, SLOT(onLoadResource()));
+  }
 }
 
 void VideoProgress::onNextFrame() {

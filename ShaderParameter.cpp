@@ -69,7 +69,7 @@ public:
   std::set<ShaderParameter> vars;
 };
 
-std::vector<ShaderParameter> parseShaderParameters(const std::string& shaderCode)
+ShaderParameters parseShaderParameters(const std::string& shaderCode)
 {
   Shader shader;
   const char* test[] = {shaderCode.c_str()};
