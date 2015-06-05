@@ -112,16 +112,19 @@ void RenderSurface::render(QPainter *painter)
 
     m_program->bind();
 
-    m_program->setUniformValue("iGlobalTime", m_globalTime);
-    m_program->setUniformValue("iResolution", QVector2D(m_outWidth,m_outHeight));
-
-    /* bind textures */
     int texCount = 0;
     for (size_t i = 0; i < sp.size(); ++i) {
       if (sp[i].bind == ShaderParameter::BindTextureSampler) {
         textures[sp[i].name].obj->bind(texCount);
         m_program->setUniformValue(sp[i].name.c_str(), texCount);
         texCount++;
+      } else if (sp[i].bind == ShaderParameter::BindTextureResolution) {
+        const QImage& image = textures[sp[i].texture].image;
+        m_program->setUniformValue(sp[i].name.c_str(), QVector2D(image.width(),image.height()));
+      } else if (sp[i].bind == ShaderParameter::BindGlobalTime) {
+        m_program->setUniformValue(sp[i].name.c_str(), m_globalTime);
+      } else if (sp[i].bind == ShaderParameter::BindOutputResolution) {
+        m_program->setUniformValue(sp[i].name.c_str(), QVector2D(m_outWidth,m_outHeight));
       }
     }
 
