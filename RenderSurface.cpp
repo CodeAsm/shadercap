@@ -110,6 +110,9 @@ void RenderSurface::render(QPainter *painter)
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+    glEnable(GL_BLEND); 
+    glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ZERO, GL_ONE);
+
     m_program->bind();
 
     int texCount = 0;
