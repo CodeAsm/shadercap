@@ -150,9 +150,9 @@ void RenderSurface::render(QPainter *painter)
 
 static const char *vertexShaderSource =
     "attribute vec3 pos;\n"
-    "varying vec2 fragCoord;\n"
+    "//varying vec2 fragCoord;\n"
     "void main() {\n"
-    "  fragCoord = pos.xy;\n"
+    "  //fragCoord = pos.xy;\n"
     "  gl_Position = vec4(pos, 1.0);\n"
     "}\n";
 
@@ -160,7 +160,7 @@ static const char *fragmentShaderSource =
     "highp float;\n"
     "uniform float iGlobalTime;\n"
     "uniform vec2 iResolution;\n"
-    "varying vec2 fragCoord;\n"
+    "//varying vec2 fragCoord;\n"
     "void main() {\n"
     "  gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
     "}\n";

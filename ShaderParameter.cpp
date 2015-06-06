@@ -82,6 +82,8 @@ ShaderParameters parseShaderParameters(const std::string& shaderCode, std::strin
 
   TBuiltInResource resources;
   memset(&resources, 0, sizeof(resources));
+  resources.limits.nonInductiveForLoops = true;
+
   shader.parse(&resources, 100, true, EShMsgDefault);
   //printf("%s\n", shader.getInfoLog());
 
