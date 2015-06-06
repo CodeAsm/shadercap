@@ -1,6 +1,7 @@
 #include "PathWidget.h"
 #include <QHBoxLayout>
 #include <QFileDialog>
+#include <QStyle>
 
 PathWidget::~PathWidget() {
 }
@@ -12,7 +13,8 @@ PathWidget::PathWidget(bool save, QWidget* parent) : QWidget(parent), saveDialog
   connect(path, SIGNAL(textChanged(const QString&)), this, SLOT(onTextChanged(const QString&)));
   layout->addWidget(path);
 
-  browse = new QPushButton("...", this);
+  browse = new QPushButton(this);
+  browse->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
   connect(browse, SIGNAL(pressed()), this, SLOT(onBrowsePress()));
   layout->addWidget(browse);
 
