@@ -24,8 +24,10 @@ signals:
   void onBackPress();
   void onNextPress();
 private:
+  QWidget* getNameWidget(const std::string& name);
   QWidget* getFloatWidget(QWidget** result);
   QWidget* getVec2Widget(QWidget** result);
+  QWidget* getUnsupportedWidget(QWidget** result);
   std::vector<ShaderParameter> parameters;
   std::vector<QWidget*> parameterWidgets;
 };

@@ -258,7 +258,8 @@ bool RenderSurface::setShaderCode(const std::string& code) {
     m_programError = m_program->log().toStdString();
     return false;
   }
-  ret = m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, code.c_str());
+  std::string userCode = "#line 0\n" + code; /* begin at line 1 */
+  ret = m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, userCode.c_str());
   if (!ret) {
     m_programError = m_program->log().toStdString();
     return false;

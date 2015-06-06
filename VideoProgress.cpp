@@ -15,6 +15,8 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters,  const Shad
 
   frame = new QLabel(this);
   frame->setAlignment(Qt::AlignCenter);
+  frame->setText("Loading...");
+
   renderLayout->addWidget(frame);
   renderLayout->addStretch();
 
@@ -43,7 +45,6 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters,  const Shad
     onNextFrame();
   }
 
-  frame->setText("Loading resources...");
   resourceLoadIndex = 0;
   onLoadResource();
 }

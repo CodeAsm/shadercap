@@ -18,7 +18,7 @@ ShaderBindings::ShaderBindings(const std::string& code, QWidget* parent) : QWidg
   QTableWidget* table = new QTableWidget(central);
   bindingsLayout->addWidget(table);
 
-  parameters = parseShaderParameters("precision highp float;\n" + code);
+  parameters = parseShaderParameters("precision highp float;\n#line 0\n" + code);
 
   std::string fmt;
 
@@ -34,7 +34,7 @@ ShaderBindings::ShaderBindings(const std::string& code, QWidget* parent) : QWidg
 
   for (size_t i = 0; i < parameters.size(); ++i) {
     std::string text = parameters[i].name + " (" + parameters[i].type + ")";
-    table->setItem(i, 0, new QTableWidgetItem(text.c_str()));
+    table->setCellWidget(i, 0, getNameWidget(text));
 
     QWidget* widget = 0;
     if (parameters[i].type == "float") {
@@ -45,7 +45,7 @@ ShaderBindings::ShaderBindings(const std::string& code, QWidget* parent) : QWidg
       widget = new PathWidget(false, this);
       table->setCellWidget(i, 1, widget);
     } else {
-      table->setCellWidget(i, 1, new QLabel("Not editable", this));
+      table->setCellWidget(i, 1, getUnsupportedWidget(&widget));
     }
 
     parameterWidgets.push_back(widget);
@@ -115,6 +115,17 @@ void ShaderBindings::onNextPressInternal() {
   onNextPress();
 }
 
+QWidget* ShaderBindings::getNameWidget(const std::string& name) {
+  QWidget* parent = new QWidget(this);
+  QHBoxLayout* layout = new QHBoxLayout(parent);
+
+  QLabel* widget = new QLabel(name.c_str(), this);
+  widget->setAlignment(Qt::AlignCenter);
+
+  layout->addWidget(widget);
+  return parent;
+}
+
 QWidget* ShaderBindings::getFloatWidget(QWidget** result) {
   QWidget* parent = new QWidget(this);
   QHBoxLayout* layout = new QHBoxLayout(parent);
@@ -143,6 +154,19 @@ QWidget* ShaderBindings::getVec2Widget(QWidget** result) {
   }
 
   layout->addWidget(widget);
+  *result = widget;
+  return parent;
+}
+
+QWidget* ShaderBindings::getUnsupportedWidget(QWidget** result) {
+  QWidget* parent = new QWidget(this);
+  QHBoxLayout* layout = new QHBoxLayout(parent);
+
+  QComboBox* widget = new QComboBox(this);
+  widget->addItem("Not editable");
+  widget->setEnabled(false);
+  layout->addWidget(widget);
+
   *result = widget;
   return parent;
 }
