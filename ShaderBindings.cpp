@@ -22,6 +22,9 @@ ShaderBindings::ShaderBindings(const std::string& code, QWidget* parent) : QWidg
 
   std::string fmt;
 
+  table->setSelectionMode(QAbstractItemView::NoSelection);
+  table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
   table->setRowCount(parameters.size());
   table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   table->verticalHeader()->hide();
