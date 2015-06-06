@@ -35,7 +35,11 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters,  const Shad
   finalFrame = false;
   captureDone = false;
   renderSurface = new RenderSurface(vp.width, vp.height);
-  renderSurface->setShaderCode(vp.code);
+  if (!renderSurface->setShaderCode(vp.code)) {
+    finishCapture("An error occured during capture: Shader error:\n\n" + renderSurface->getShaderError());
+    return;
+  }
+
   renderSurface->setShaderParameters(sp);
   encoder = new VideoEncoder(vp.path, vp.fps, vp.bitrate);
   frameCount = 0;
@@ -43,10 +47,10 @@ VideoProgress::VideoProgress(const VideoParameters& videoParameters,  const Shad
 
   if (!sp.size()) {
     onNextFrame();
+  } else { /* stuff to load */
+    resourceLoadIndex = 0;
+    onLoadResource();
   }
-
-  resourceLoadIndex = 0;
-  onLoadResource();
 }
 
 void VideoProgress::onLoadResource() {

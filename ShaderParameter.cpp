@@ -69,16 +69,25 @@ public:
   std::set<ShaderParameter> vars;
 };
 
-ShaderParameters parseShaderParameters(const std::string& shaderCode)
+ShaderParameters parseShaderParameters(const std::string& shaderCode, std::string* error)
 {
+  if (shaderCode.empty()) {
+    *error = "Error: Please supply a shader program.";
+    return ShaderParameters();
+  }
+
   Shader shader;
-  const char* test[] = {shaderCode.c_str()};
-  shader.setStrings(test, 1);
+  const char* test[] = {"precision highp float;\n#line 1\n", shaderCode.c_str()};
+  shader.setStrings(test, 2);
 
   TBuiltInResource resources;
   memset(&resources, 0, sizeof(resources));
   shader.parse(&resources, 100, true, EShMsgDefault);
   //printf("%s\n", shader.getInfoLog());
+
+  if (error) {
+    *error = shader.getInfoLog();
+  }
 
   TIntermediate* tree = shader.getIntermediate();
   TIntermNode* root = tree->getTreeRoot();

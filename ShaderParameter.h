@@ -27,6 +27,6 @@ struct ShaderParameter {
 
 typedef std::vector<ShaderParameter> ShaderParameters;
 
-ShaderParameters parseShaderParameters(const std::string& shaderCode);
+ShaderParameters parseShaderParameters(const std::string& shaderCode, std::string* error = 0);
 
 #endif // __SHADER_PARAMETER_H__

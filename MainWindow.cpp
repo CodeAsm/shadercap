@@ -57,20 +57,13 @@ void MainWindow::layoutInitialView() {
 }
 
 void MainWindow::onConfigurePress() {
-  renderSurface = new RenderSurface(128, 128);
-  renderSurface->renderNow(0.0f);
   QString program = code->document()->toPlainText();
   shaderProgram = program.toStdString();
-  bool shaderRet = renderSurface->setShaderCode(shaderProgram);
-  std::string shaderError = renderSurface->getShaderError();
-  delete renderSurface;
-  renderSurface = 0;
-  if (shaderRet) {
+  std::string shaderError;
+  parseShaderParameters(shaderProgram, &shaderError);
+  if (shaderError.empty()) {
     onLayoutBindingsView();
   } else {
-    if (shaderError.empty()) {
-      shaderError = "Error: The shader could not be compiled.";
-    }
     preview->setText(shaderError.c_str());
     preview->show();
   }

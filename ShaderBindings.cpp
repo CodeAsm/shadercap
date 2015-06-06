@@ -18,7 +18,7 @@ ShaderBindings::ShaderBindings(const std::string& code, QWidget* parent) : QWidg
   QTableWidget* table = new QTableWidget(central);
   bindingsLayout->addWidget(table);
 
-  parameters = parseShaderParameters("precision highp float;\n#line 0\n" + code);
+  parameters = parseShaderParameters(code);
 
   std::string fmt;
 
